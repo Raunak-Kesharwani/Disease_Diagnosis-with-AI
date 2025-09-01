@@ -71,7 +71,7 @@ Disease/
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Raunak-Kesharwani/Disease_Diagnosis-with-AI.git
 cd Disease
 ```
 
