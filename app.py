@@ -1,7 +1,19 @@
 import streamlit as st
 from utils.ui_helpers import get_base64_of_bin_file
+st.set_page_config(
+    page_title="Disease Prediction Home",
+    page_icon="⚕️",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
-st.set_page_config(page_title="Disease Prediction Home", page_icon="⚕️", layout="centered")
+
+st.markdown("""
+<style>
+[data-testid="stSidebar"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+
 
 # Inject fullscreen Spline background
 spline_bg = """

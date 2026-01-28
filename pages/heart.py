@@ -1,30 +1,31 @@
 import streamlit as st
 import pickle
-import warnings
 import pandas as pd
 from utils.ui_helpers import set_disease_background, disease_sidebar, mainmenu
 
+# -------------------------------------------------
 # Page config
+# -------------------------------------------------
 st.set_page_config(page_title="Heart Disease", page_icon="❤️", layout="wide")
-warnings.filterwarnings("ignore")
 
+# -------------------------------------------------
 # UI setup
+# -------------------------------------------------
 set_disease_background("Image/Heart.png")
 disease_sidebar("Heart")
 mainmenu()
 
 st.title("❤️ Heart Disease Prediction")
 
+# -------------------------------------------------
 # Load the model
+# -------------------------------------------------
 with open("Models/heart_disease_model.pkl", "rb") as f:
     model = pickle.load(f)
 
-# Feature names based on your pipeline
-categorical_features = ['cp', 'restecg', 'slope', 'ca', 'thal']
-numerical_features = ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']
-binary_features = ['sex', 'fbs', 'exang']
-
-# Categorical mappings (raw input)
+# -------------------------------------------------
+# Feature mappings
+# -------------------------------------------------
 cp_options = {
     "Typical Angina": 0,
     "Atypical Angina": 1,
@@ -50,7 +51,9 @@ sex_options = {"Female": 0, "Male": 1}
 fbs_options = {"No": 0, "Yes": 1}
 exang_options = {"No": 0, "Yes": 1}
 
+# -------------------------------------------------
 # UI Inputs
+# -------------------------------------------------
 cols = st.columns(3)
 
 with cols[0]:
@@ -72,7 +75,9 @@ with cols[2]:
     restecg = st.selectbox("Resting Electrocardiographic Results", options=list(restecg_options.keys()))
     thal = st.selectbox("Thalassemia", options=list(thal_options.keys()))
 
-# Prepare the input data as a DataFrame
+# -------------------------------------------------
+# Prepare input data
+# -------------------------------------------------
 input_data = pd.DataFrame({
     'age': [age],
     'sex': [sex_options[sex]],
@@ -89,19 +94,37 @@ input_data = pd.DataFrame({
     'thal': [thal_options[thal]]
 })
 
-# Predict button
+# -------------------------------------------------
+# Prediction
+# -------------------------------------------------
 if st.button("🔍 Predict"):
     try:
         prediction = model.predict(input_data)[0]
-        st.session_state.update({
-            'prediction_result': prediction,
-            'selected_disease': "Heart Disease",
-            'input_data': input_data.to_dict()
-        })
-        st.switch_page("pages/result.py")
-    except Exception as e:
-        st.error(f"An error occurred during prediction: {e}")
 
-# Back button
+        # Store ONLY what chatbot needs
+        st.session_state["selected_disease"] = "Heart Disease"
+        st.session_state["prediction_result"] = prediction
+
+    except Exception as e:
+        st.error(f"Prediction failed: {e}")
+
+# -------------------------------------------------
+# Result display (inline)
+# -------------------------------------------------
+if "prediction_result" in st.session_state and st.session_state.get("selected_disease") == "Heart Disease":
+    st.markdown("---")
+    st.subheader("🧾 Prediction Result")
+
+    if st.session_state["prediction_result"] == 1:
+        st.error("🔴 Likely **Heart Disease Present**")
+    else:
+        st.success("🟢 Likely **No Heart Disease**")
+
+    if st.button("💬 Talk to AI Assistant"):
+        st.switch_page("pages/chatbot.py")
+
+# -------------------------------------------------
+# Navigation
+# -------------------------------------------------
 if st.button("🏠 Back to Home"):
     st.switch_page("app.py")
