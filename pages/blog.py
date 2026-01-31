@@ -4,7 +4,7 @@ from utils.ui_helpers import mainmenu , set_disease_background
 
 st.set_page_config(page_title="Health Blog", page_icon="📰", layout="wide")
 st.title("📰 Health & Wellness Blog")
-set_disease_background("Image/Blog.png")
+set_disease_background("Image/blog.png")
 mainmenu()
 
 
